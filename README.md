@@ -87,7 +87,7 @@ Major packages used in this project:
 
 ### 1. Clone the repository
 ```bash
-git clone <repository_url>
+git clone https://github.com/Aniruddh8877/Insta_Clone.git
 cd instagram-clone
 ```
 
