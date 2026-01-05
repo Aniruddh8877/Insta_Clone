@@ -36,6 +36,21 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
           // Re-fetch to populate the user who just commented (optional but good for UI)
           const updatedPost = await Post.findById(id).populate("comments.user", "username");
 
+          // Notify Socket Server
+          try {
+               await fetch("https://insta-clone-server-lkww.onrender.com/api/socket/update", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                         type: "post:commented",
+                         postId: id,
+                         data: { comments: updatedPost.comments }
+                    })
+               });
+          } catch (error) {
+               console.error("Socket notification failed:", error);
+          }
+
           return NextResponse.json({ message: "Comment added", comments: updatedPost.comments }, { status: 200 });
      } catch (error: any) {
           return NextResponse.json({ error: error.message }, { status: 500 });

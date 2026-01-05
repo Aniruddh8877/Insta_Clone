@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.11.2",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.8.0",
     "dotenv": "^17.2.3",
@@ -17,7 +18,9 @@
     "next": "16.1.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-icons": "^5.5.0"
+    "react-icons": "^5.5.0",
+    "react-redux": "^9.2.0",
+    "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -30,5 +33,18 @@
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
     "typescript": "^5"
-  }
+  },
+  "description": "A fully responsive full-stack social media application built with **Next.js**, **MongoDB**, and **Cloudinary**. This project replicates core Instagram features including posting photos/videos, liking, commenting, following users, and direct messaging.",
+  "main": "postcss.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aniruddh8877/Insta_Clone.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Aniruddh8877/Insta_Clone/issues"
+  },
+  "homepage": "https://github.com/Aniruddh8877/Insta_Clone#readme"
 }

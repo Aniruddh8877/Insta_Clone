@@ -31,6 +31,21 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
           await post.save();
 
+          // Notify Socket Server
+          try {
+               await fetch("https://insta-clone-server-lkww.onrender.com/api/socket/update", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                         type: "post:liked",
+                         postId: id,
+                         data: { likes: post.likes }
+                    })
+               });
+          } catch (error) {
+               console.error("Socket notification failed:", error);
+          }
+
           return NextResponse.json({ message: "Success", likes: post.likes }, { status: 200 });
      } catch (error: any) {
           return NextResponse.json({ error: error.message }, { status: 500 });
