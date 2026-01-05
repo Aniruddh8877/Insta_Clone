@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { socket } from "@/lib/socket";
 
 export default function ChatPage() {
      const params = useParams();
@@ -17,7 +18,11 @@ export default function ChatPage() {
           messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
      };
 
+
+
+
      useEffect(() => {
+          // Initial fetch
           fetch(`/api/messages/${userId}`)
                .then((res) => res.json())
                .then((data) => {
@@ -27,16 +32,25 @@ export default function ChatPage() {
                })
                .catch((err) => console.error(err));
 
-          // Simple polling for real-time like effect
-          const interval = setInterval(() => {
-               fetch(`/api/messages/${userId}`)
-                    .then((res) => res.json())
-                    .then((data) => {
-                         if (data.messages) setMessages(data.messages);
-                    });
-          }, 5000);
+          // Real-time listener
+          const handleNewMessage = (msg: any) => {
+               // Check if this message belongs to the current conversation
+               // 1. If I received it from the user I'm looking at (msg.sender === userId)
+               // 2. If I sent it (msg.sender === myId) - handled by optimistic update usually, but good to sync? 
+               //    Actually, my own messages are added via handleSend. 
+               //    Avoiding duplicates: check if ID exists?
 
-          return () => clearInterval(interval);
+               if (msg.sender === userId) {
+                    setMessages((prev) => [...prev, msg]);
+                    scrollToBottom();
+               }
+          };
+
+          socket.on("message:new", handleNewMessage);
+
+          return () => {
+               socket.off("message:new", handleNewMessage);
+          };
      }, [userId]);
 
      useEffect(() => {
@@ -93,8 +107,8 @@ export default function ChatPage() {
 
                          return (
                               <div key={msg._id} className={`max-w-[70%] px-4 py-2 rounded-2xl ${!isFromOther
-                                        ? "bg-blue-600 self-end rounded-br-none"
-                                        : "bg-neutral-800 self-start rounded-bl-none"
+                                   ? "bg-blue-600 self-end rounded-br-none"
+                                   : "bg-neutral-800 self-start rounded-bl-none"
                                    }`}>
                                    {msg.content}
                               </div>

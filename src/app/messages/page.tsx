@@ -3,16 +3,29 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
+import { socket } from "@/lib/socket";
+
 export default function MessagesPage() {
      const [users, setUsers] = useState([]);
      const [loading, setLoading] = useState(true);
 
-     useEffect(() => {
+     const fetchUsers = () => {
           fetch("/api/messages")
                .then((res) => res.json())
                .then((data) => setUsers(data.users || []))
                .catch((err) => console.error(err))
                .finally(() => setLoading(false));
+     };
+
+     useEffect(() => {
+          fetchUsers();
+
+          const handleUpdate = () => fetchUsers();
+          socket.on("message:new", handleUpdate);
+
+          return () => {
+               socket.off("message:new", handleUpdate);
+          };
      }, []);
 
      return (

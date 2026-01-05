@@ -12,6 +12,17 @@ export default function SocketManager() {
      useEffect(() => {
           socket.connect();
 
+          // Identify user
+          fetch('/api/auth/me')
+               .then(res => res.json())
+               .then(data => {
+                    if (data.user) {
+                         socket.emit('join_user', data.user._id);
+                         console.log("Joined user room:", data.user._id);
+                    }
+               })
+               .catch(err => console.error("Socket auth failed", err));
+
           function onPostUpdate(event: { type: string; postId: string; data: any }) {
                console.log("Socket received update:", event);
 

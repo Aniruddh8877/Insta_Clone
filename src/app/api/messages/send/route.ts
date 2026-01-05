@@ -27,6 +27,22 @@ export async function POST(req: Request) {
                content
           });
 
+          // Notify Socket Server (Sync Real-time)
+          try {
+               await fetch("https://insta-clone-server-lkww.onrender.com/api/socket/update", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                         type: "message:new",
+                         postId: "dm", // Placeholder
+                         receiverId,
+                         data: newMessage
+                    })
+               });
+          } catch (error) {
+               console.error("Socket notification failed:", error);
+          }
+
           return NextResponse.json({ message: "Sent", data: newMessage }, { status: 201 });
      } catch (error: any) {
           return NextResponse.json({ error: error.message }, { status: 500 });
